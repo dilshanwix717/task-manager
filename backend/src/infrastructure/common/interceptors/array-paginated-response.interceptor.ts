@@ -9,9 +9,7 @@ import { map, Observable } from 'rxjs';
 import { QueryResponseWithPagination } from '../dtos/response.dto';
 
 @Injectable()
-export class ArrayResponseSerializeInterceptorWithPagination
-  implements NestInterceptor
-{
+export class ArrayResponseSerializeInterceptorWithPagination implements NestInterceptor {
   constructor(private readonly _dto: ClassConstructor<unknown>) {}
   intercept(
     context: ExecutionContext,

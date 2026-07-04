@@ -10,7 +10,9 @@ import { TaskModel } from 'src/domain/models/task.model';
 import { ITaskRepositoryInterface } from 'src/domain/repositories/task.repository-interface';
 import { IUseCase } from 'src/infrastructure/abstract/use-case.interface';
 import { CurrentUser } from 'src/infrastructure/auth-module/decorators/current-user.decorator';
+import { ITaskEventsPublisher } from 'src/infrastructure/gateways/task-events-publisher.interface';
 import { ISTaskRepository } from 'src/infrastructure/interface-symbols/repository.symbols';
+import { ISTaskEventsPublisher } from 'src/infrastructure/interface-symbols/service.symbols';
 import { DeepPartial } from 'typeorm';
 
 interface IUpdateTaskParams {
@@ -29,6 +31,9 @@ export class UpdateTaskUseCase implements IUpdateTaskUseCase {
   constructor(
     @Inject(ISTaskRepository)
     private readonly _taskRepository: ITaskRepositoryInterface,
+
+    @Inject(ISTaskEventsPublisher)
+    private readonly _taskEventsPublisher: ITaskEventsPublisher,
   ) {}
 
   async execute({
@@ -64,6 +69,10 @@ export class UpdateTaskUseCase implements IUpdateTaskUseCase {
 
     await this._taskRepository.update(changes);
 
-    return await this._taskRepository.findById(taskId);
+    const updatedTask = await this._taskRepository.findById(taskId);
+
+    this._taskEventsPublisher.publishTaskUpdated(updatedTask);
+
+    return updatedTask;
   }
 }

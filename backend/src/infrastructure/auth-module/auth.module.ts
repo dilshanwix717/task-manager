@@ -2,7 +2,7 @@ import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from '../entities/user.entity';
 import { ConfigurationModule } from '../configurations/base-config/config.module';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtSignOptions } from '@nestjs/jwt';
 import { ConfigurationService } from '../configurations/base-config/config.service';
 import { UseCaseModule } from 'src/application/use-case.module';
 import { APP_GUARD } from '@nestjs/core';
@@ -29,7 +29,11 @@ import {
       useFactory: (configService: ConfigurationService) => ({
         global: true,
         secret: configService.jwtConfig.secret,
-        signOptions: { expiresIn: configService.jwtConfig.expiresIn },
+        signOptions: {
+          //env value like "1d", cast to the ms string format the jwt lib expects
+          expiresIn: configService.jwtConfig
+            .expiresIn as JwtSignOptions['expiresIn'],
+        },
       }),
     }),
   ],

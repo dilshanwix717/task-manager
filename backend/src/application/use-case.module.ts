@@ -21,6 +21,7 @@ import { RoleRepository } from 'src/infrastructure/repositories/role.repository'
 import { UserAccountRepository } from 'src/infrastructure/repositories/user-account.repository';
 import { TaskRepository } from 'src/infrastructure/repositories/task.repository';
 import { AuthModule } from 'src/infrastructure/auth-module/auth.module';
+import { RealtimeModule } from 'src/infrastructure/gateways/realtime.module';
 import { RetrieveUsersUseCase } from './user-management/retrieve-users.use-case';
 import { CreateTaskUseCase } from './task/create-task.use-case';
 import { RetrieveTasksUseCase } from './task/retrieve-tasks.use-case';
@@ -85,6 +86,7 @@ const services = [];
   imports: [
     ConfigurationModule,
     forwardRef(() => AuthModule),
+    RealtimeModule,
     TypeOrmModule.forFeature([UserEntity, RoleEntity, TaskEntity]),
   ],
   providers: [...repositories, ...services, ...userUseCases, ...taskUseCases],
