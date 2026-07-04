@@ -1,0 +1,25 @@
+# dependencies
+node_modules/
+
+# builds
+dist/
+.next/
+out/
+build/
+
+# coverage
+coverage/
+
+# local env overrides
+.env.local
+.env.*.local
+
+# os / editor
+.DS_Store
+*.log
+
+# working notes (not part of the submission)
+PLAN.md
+
+# legacy vite frontend kept only as porting reference (removed in a later phase)
+Front-end/
