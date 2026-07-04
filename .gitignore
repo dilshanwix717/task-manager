@@ -20,6 +20,3 @@ coverage/
 
 # working notes (not part of the submission)
 PLAN.md
-
-# legacy vite frontend kept only as porting reference (removed in a later phase)
-Front-end/
