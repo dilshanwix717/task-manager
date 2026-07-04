@@ -8,6 +8,7 @@ import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from '../role';
 import { IS_PUBLIC_KEY } from '../decorators/auth.decorator';
 import { AuthenticatedRequest } from '../interfaces/token-payload.interface';
+import { UserRoleType } from 'src/domain/enums/user-role.enum';
 
 @Injectable()
 export class RoleGuard implements CanActivate {
@@ -15,7 +16,7 @@ export class RoleGuard implements CanActivate {
 
   constructor(private readonly _reflector: Reflector) {}
   canActivate(context: ExecutionContext): boolean {
-    const roles = this._reflector.getAllAndOverride<string[]>(ROLES_KEY, [
+    const roles = this._reflector.getAllAndOverride<UserRoleType[]>(ROLES_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);

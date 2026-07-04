@@ -76,6 +76,8 @@ export class UserAccountRepository implements IUserAccountRepositoryInterface {
         userName: true,
         email: true,
         role: { id: true, name: true },
+        //createdAt must be selected because the query orders by it
+        createdAt: true,
       },
       take: numericLimit,
       skip: numericSkip,

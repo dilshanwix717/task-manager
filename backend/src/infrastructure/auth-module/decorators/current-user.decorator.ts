@@ -3,11 +3,12 @@ import {
   ExecutionContext,
   UnauthorizedException,
 } from '@nestjs/common';
+import { UserRoleType } from 'src/domain/enums/user-role.enum';
 import { AuthenticatedRequest } from '../interfaces/token-payload.interface';
 
 export interface CurrentUser {
   id: string;
-  role: string;
+  role: UserRoleType;
   name: string;
 }
 

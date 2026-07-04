@@ -8,6 +8,8 @@ import { UseCaseModule } from './application/use-case.module';
 import { AuthModule } from './infrastructure/auth-module/auth.module';
 import { RequestLoggerMiddleware } from './infrastructure/common/middlewares/request-response.middlewear';
 import { HealthController } from './infrastructure/controllers/BE-health-check/BE-health-check.controller';
+import { TaskController } from './infrastructure/controllers/task/task.controller';
+import { UserManagementController } from './infrastructure/controllers/user-management/user-management.controller';
 
 @Module({
   imports: [
@@ -23,7 +25,7 @@ import { HealthController } from './infrastructure/controllers/BE-health-check/B
       },
     ]),
   ],
-  controllers: [HealthController],
+  controllers: [HealthController, TaskController, UserManagementController],
   providers: [
     ApplicationStartupHook,
     {
