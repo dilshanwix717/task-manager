@@ -17,11 +17,12 @@ import { UserManagementController } from './infrastructure/controllers/user-mana
     UseCaseModule,
     TypeOrmConfigModule,
     AuthModule,
-    //global rate limiting on the public edge
+    //global rate limiting on the public edge, disabled while running tests
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
         limit: 100,
+        skipIf: () => process.env.NODE_ENV === 'test',
       },
     ]),
   ],

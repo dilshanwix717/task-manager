@@ -1,6 +1,8 @@
 import {
   Body,
   Controller,
+  HttpCode,
+  HttpStatus,
   Inject,
   Post,
   UseInterceptors,
@@ -53,6 +55,7 @@ export class AuthController {
 
   @Public()
   @Post('/login')
+  @HttpCode(HttpStatus.OK)
   @UseInterceptors(new ResponseSerializeInterceptor(TokenPresenterDto))
   @ApiOperation({ summary: 'User login with email and password' })
   @ApiOkResponse({ type: TokenPresenterDto })
