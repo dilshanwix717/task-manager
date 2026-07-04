@@ -1,4 +1,6 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { ConfigurationModule } from './infrastructure/configurations/base-config/config.module';
 import { TypeOrmConfigModule } from './infrastructure/configurations/typeorm-config/typeorm.module';
 import { ApplicationStartupHook } from './infrastructure/services/application-startup.hook';
@@ -13,9 +15,22 @@ import { HealthController } from './infrastructure/controllers/BE-health-check/B
     UseCaseModule,
     TypeOrmConfigModule,
     AuthModule,
+    //global rate limiting on the public edge
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 100,
+      },
+    ]),
   ],
   controllers: [HealthController],
-  providers: [ApplicationStartupHook],
+  providers: [
+    ApplicationStartupHook,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

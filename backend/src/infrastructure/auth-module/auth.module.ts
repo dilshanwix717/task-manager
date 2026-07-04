@@ -11,7 +11,11 @@ import { RoleGuard } from './guards/role.guards';
 import { PasswordService } from './services/password.service';
 import { AuthController } from './controllers/auth.controller';
 import { UserLoginUseCase } from './use-cases/user-login.use-case';
-import { ISUserLoginUseCase } from '../interface-symbols/use-case.symbols';
+import { RegisterUserUseCase } from './use-cases/register-user.use-case';
+import {
+  ISRegisterUserUseCase,
+  ISUserLoginUseCase,
+} from '../interface-symbols/use-case.symbols';
 
 @Module({
   imports: [
@@ -43,6 +47,10 @@ import { ISUserLoginUseCase } from '../interface-symbols/use-case.symbols';
     {
       provide: ISUserLoginUseCase,
       useClass: UserLoginUseCase,
+    },
+    {
+      provide: ISRegisterUserUseCase,
+      useClass: RegisterUserUseCase,
     },
   ],
   exports: [PasswordService],
