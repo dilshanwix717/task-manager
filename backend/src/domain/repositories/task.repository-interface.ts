@@ -10,5 +10,9 @@ export interface ITaskRepositoryInterface extends IMainRepositoryInterface<TaskM
     ownerId?: string,
   ): Promise<[TaskModel[], number]>;
 
+  countTasksByStatus(
+    ownerId?: string,
+  ): Promise<Partial<Record<TaskStatusType, number>>>;
+
   deleteById(id: string): Promise<void>;
 }

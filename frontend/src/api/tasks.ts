@@ -18,6 +18,18 @@ export interface CreateTaskPayload {
 
 export type UpdateTaskPayload = Partial<CreateTaskPayload>;
 
+export interface TaskSummary {
+  todo: number;
+  inProgress: number;
+  done: number;
+  total: number;
+}
+
+export const getTaskSummary = async (): Promise<TaskSummary> => {
+  const response = await api.get<TaskSummary>("/tasks/summary");
+  return response.data;
+};
+
 export const getTasks = async (
   params: TaskListParams,
 ): Promise<PaginatedResponse<Task>> => {

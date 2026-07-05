@@ -11,3 +11,6 @@ export const ISRetrieveTasksUseCase = Symbol('RetrieveTasksUseCase');
 export const ISRetrieveTaskByIdUseCase = Symbol('RetrieveTaskByIdUseCase');
 export const ISUpdateTaskUseCase = Symbol('UpdateTaskUseCase');
 export const ISDeleteTaskUseCase = Symbol('DeleteTaskUseCase');
+export const ISRetrieveTaskSummaryUseCase = Symbol(
+  'RetrieveTaskSummaryUseCase',
+);

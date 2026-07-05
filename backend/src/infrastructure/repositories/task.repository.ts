@@ -108,6 +108,31 @@ export class TaskRepository implements ITaskRepositoryInterface {
 
     return Mapper.toModel(updatedTask, TaskModel);
   }
+  async countTasksByStatus(
+    ownerId?: string,
+  ): Promise<Partial<Record<TaskStatusType, number>>> {
+    const queryBuilder = this._taskRepository
+      .createQueryBuilder('task')
+      .select('task.status', 'status')
+      .addSelect('COUNT(task.id)', 'count')
+      .groupBy('task.status');
+
+    if (ownerId) queryBuilder.where('task.owner = :ownerId', { ownerId });
+
+    const rows = await queryBuilder.getRawMany<{
+      status: TaskStatusType;
+      count: string;
+    }>();
+
+    //count comes back as a string from postgres
+    return rows.reduce<Partial<Record<TaskStatusType, number>>>(
+      (counts, row) => {
+        counts[row.status] = Number(row.count);
+        return counts;
+      },
+      {},
+    );
+  }
   async deleteById(id: string): Promise<void> {
     await this._taskRepository.delete({ id });
   }

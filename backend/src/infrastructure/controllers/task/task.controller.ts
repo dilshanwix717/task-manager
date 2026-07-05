@@ -34,6 +34,7 @@ import {
   ISDeleteTaskUseCase,
   ISRetrieveTaskByIdUseCase,
   ISRetrieveTasksUseCase,
+  ISRetrieveTaskSummaryUseCase,
   ISUpdateTaskUseCase,
 } from 'src/infrastructure/interface-symbols/use-case.symbols';
 import { ICreateTaskUseCase } from 'src/application/task/create-task.use-case';
@@ -41,10 +42,12 @@ import { IRetrieveTasksUseCase } from 'src/application/task/retrieve-tasks.use-c
 import { IRetrieveTaskByIdUseCase } from 'src/application/task/retrieve-task-by-id.use-case';
 import { IUpdateTaskUseCase } from 'src/application/task/update-task.use-case';
 import { IDeleteTaskUseCase } from 'src/application/task/delete-task.use-case';
+import { IRetrieveTaskSummaryUseCase } from 'src/application/task/retrieve-task-summary.use-case';
 import {
   CreateTaskDto,
   RetrieveTasksQueryParamsDto,
   TaskPresenterDto,
+  TaskSummaryPresenterDto,
   UpdateTaskDto,
 } from './dto/task.dto';
 
@@ -67,6 +70,9 @@ export class TaskController {
 
     @Inject(ISDeleteTaskUseCase)
     private readonly _deleteTaskUseCase: IDeleteTaskUseCase,
+
+    @Inject(ISRetrieveTaskSummaryUseCase)
+    private readonly _retrieveTaskSummaryUseCase: IRetrieveTaskSummaryUseCase,
   ) {}
 
   @Post()
@@ -109,6 +115,18 @@ export class TaskController {
       offset: retrieveTasksQueryParamsDto.limit,
       results: tasks,
     };
+  }
+
+  //declared before :taskId so "summary" is not swallowed by the param route
+  @Get('summary')
+  @Roles(UserRoleType.ADMIN, UserRoleType.USER)
+  @UseInterceptors(new ResponseSerializeInterceptor(TaskSummaryPresenterDto))
+  @ApiOperation({
+    summary: 'Get task counts by status (own tasks, all tasks for admins)',
+  })
+  @ApiOkResponse({ type: TaskSummaryPresenterDto })
+  async getTaskSummary(@User() currentUser: CurrentUser) {
+    return await this._retrieveTaskSummaryUseCase.execute({ currentUser });
   }
 
   @Get(':taskId')

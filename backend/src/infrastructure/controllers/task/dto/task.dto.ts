@@ -60,6 +60,24 @@ export class RetrieveTasksQueryParamsDto extends PaginationQueryParams {
   ownerId?: string;
 }
 
+export class TaskSummaryPresenterDto {
+  @Expose()
+  @ApiProperty({ type: Number })
+  todo: number;
+
+  @Expose()
+  @ApiProperty({ type: Number })
+  inProgress: number;
+
+  @Expose()
+  @ApiProperty({ type: Number })
+  done: number;
+
+  @Expose()
+  @ApiProperty({ type: Number })
+  total: number;
+}
+
 export class TaskOwnerPresenterDto {
   @Expose()
   @ApiProperty({ type: String })

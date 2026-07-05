@@ -14,6 +14,7 @@ import {
   ISDeleteTaskUseCase,
   ISRetrieveTaskByIdUseCase,
   ISRetrieveTasksUseCase,
+  ISRetrieveTaskSummaryUseCase,
   ISRetrieveUsersUseCase,
   ISUpdateTaskUseCase,
 } from 'src/infrastructure/interface-symbols/use-case.symbols';
@@ -28,8 +29,9 @@ import { RetrieveTasksUseCase } from './task/retrieve-tasks.use-case';
 import { RetrieveTaskByIdUseCase } from './task/retrieve-task-by-id.use-case';
 import { UpdateTaskUseCase } from './task/update-task.use-case';
 import { DeleteTaskUseCase } from './task/delete-task.use-case';
+import { RetrieveTaskSummaryUseCase } from './task/retrieve-task-summary.use-case';
 
-//============================================================== REPOSITORIES ==============================================================
+//repositories
 
 const repositories = [
   {
@@ -46,7 +48,7 @@ const repositories = [
   },
 ];
 
-//============================================================== USE CASES ==============================================================
+//use cases
 
 const userUseCases = [
   {
@@ -76,9 +78,13 @@ const taskUseCases = [
     provide: ISDeleteTaskUseCase,
     useClass: DeleteTaskUseCase,
   },
+  {
+    provide: ISRetrieveTaskSummaryUseCase,
+    useClass: RetrieveTaskSummaryUseCase,
+  },
 ];
 
-//============================================================== SERVICES ==============================================================
+//services
 
 const services = [];
 

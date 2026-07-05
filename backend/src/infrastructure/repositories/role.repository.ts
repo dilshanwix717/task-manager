@@ -77,7 +77,7 @@ export class RoleRepository implements IRoleRepositoryInterface {
       this._roleRepository.create(role),
     );
 
-    let createdRoles: RoleEntity[] = [];
+    let createdRoles: RoleEntity[];
 
     if (entityManager) {
       createdRoles = await entityManager.save(RoleEntity, roleInstances);

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Pagination } from "@/components/Pagination";
 import TaskFilters from "@/components/tasks/TaskFilters";
+import TaskSummaryChips from "@/components/tasks/TaskSummaryChips";
 import TaskTable from "@/components/tasks/TaskTable";
 import TaskFormDialog from "@/components/tasks/TaskFormDialog";
 import ConfirmationDialog from "@/components/dialogs/ConfirmationDialog";
@@ -92,6 +93,8 @@ export default function TasksPage() {
           New task
         </Button>
       </div>
+
+      <TaskSummaryChips />
 
       <TaskFilters
         status={status}

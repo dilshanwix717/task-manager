@@ -1,6 +1,6 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as request from 'supertest';
+import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from './../src/app.module';
 
@@ -153,6 +153,21 @@ describe('Tasks (e2e)', () => {
 
     expect(response.body.status).toBe('IN_PROGRESS');
     expect(response.body.title).toBe('Ship the assignment');
+  });
+
+  it('returns the status summary scoped to the current user', async () => {
+    const response = await request(app.getHttpServer())
+      .get('/tasks/summary')
+      .set('Authorization', `Bearer ${aliceToken}`)
+      .expect(200);
+
+    //alice owns exactly one task in this suite, moved to IN_PROGRESS above
+    expect(response.body).toEqual({
+      todo: 0,
+      inProgress: 1,
+      done: 0,
+      total: 1,
+    });
   });
 
   it('rejects an invalid status value with 400', () => {

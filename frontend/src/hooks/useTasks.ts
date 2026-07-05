@@ -10,6 +10,7 @@ import {
   deleteTask,
   getTaskById,
   getTasks,
+  getTaskSummary,
   updateTask,
   type CreateTaskPayload,
   type TaskListParams,
@@ -31,6 +32,13 @@ export const useTask = (taskId: string) =>
     queryFn: () => getTaskById(taskId),
     enabled: Boolean(taskId),
     retry: false,
+  });
+
+//keyed under ["tasks", ...] so every existing tasks invalidation refreshes it too
+export const useTaskSummary = () =>
+  useQuery({
+    queryKey: ["tasks", "summary"],
+    queryFn: getTaskSummary,
   });
 
 export const useUsers = (enabled: boolean) =>
