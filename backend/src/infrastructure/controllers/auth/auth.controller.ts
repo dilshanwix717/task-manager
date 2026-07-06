@@ -8,18 +8,18 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
-import { Public } from '../decorators/auth.decorator';
+import { Public } from 'src/infrastructure/auth-module/decorators/auth.decorator';
 import {
   RegisterUserDto,
   SignInWithEmailDto,
   TokenPresenterDto,
-} from './dtos/auth.dto';
+} from './dto/auth.dto';
 import {
   ISRegisterUserUseCase,
   ISUserLoginUseCase,
 } from 'src/infrastructure/interface-symbols/use-case.symbols';
-import { IUserLoginUseCase } from '../use-cases/user-login.use-case';
-import { IRegisterUserUseCase } from '../use-cases/register-user.use-case';
+import { IUserLoginUseCase } from 'src/application/auth/user-login.use-case';
+import { IRegisterUserUseCase } from 'src/application/auth/register-user.use-case';
 import { ResponseSerializeInterceptor } from 'src/infrastructure/common/interceptors/single-response.interceptor';
 import {
   ApiCreatedResponse,

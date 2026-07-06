@@ -2,7 +2,7 @@ import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { IUserAccountRepositoryInterface } from 'src/domain/repositories/user-account.repository-interface';
 import { IUseCase } from 'src/infrastructure/abstract/use-case.interface';
 import { ISUserAccountRepository } from 'src/infrastructure/interface-symbols/repository.symbols';
-import { PasswordService } from '../services/password.service';
+import { PasswordService } from 'src/infrastructure/auth-module/services/password.service';
 import { JwtService } from '@nestjs/jwt';
 
 interface IUserLoginParams {

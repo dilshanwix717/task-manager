@@ -6,7 +6,7 @@ import {
   ISRoleRepository,
   ISUserAccountRepository,
 } from 'src/infrastructure/interface-symbols/repository.symbols';
-import { PasswordService } from '../services/password.service';
+import { PasswordService } from 'src/infrastructure/auth-module/services/password.service';
 import { RegisterUserUseCase } from './register-user.use-case';
 
 describe('RegisterUserUseCase', () => {

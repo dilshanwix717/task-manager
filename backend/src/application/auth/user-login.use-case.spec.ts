@@ -2,7 +2,7 @@ import { UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
 import { ISUserAccountRepository } from 'src/infrastructure/interface-symbols/repository.symbols';
-import { PasswordService } from '../services/password.service';
+import { PasswordService } from 'src/infrastructure/auth-module/services/password.service';
 import { UserLoginUseCase } from './user-login.use-case';
 
 describe('UserLoginUseCase', () => {

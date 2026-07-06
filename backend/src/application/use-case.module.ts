@@ -12,11 +12,13 @@ import {
 import {
   ISCreateTaskUseCase,
   ISDeleteTaskUseCase,
+  ISRegisterUserUseCase,
   ISRetrieveTaskByIdUseCase,
   ISRetrieveTasksUseCase,
   ISRetrieveTaskSummaryUseCase,
   ISRetrieveUsersUseCase,
   ISUpdateTaskUseCase,
+  ISUserLoginUseCase,
 } from 'src/infrastructure/interface-symbols/use-case.symbols';
 import { RoleRepository } from 'src/infrastructure/repositories/role.repository';
 import { UserAccountRepository } from 'src/infrastructure/repositories/user-account.repository';
@@ -30,6 +32,8 @@ import { RetrieveTaskByIdUseCase } from './task/retrieve-task-by-id.use-case';
 import { UpdateTaskUseCase } from './task/update-task.use-case';
 import { DeleteTaskUseCase } from './task/delete-task.use-case';
 import { RetrieveTaskSummaryUseCase } from './task/retrieve-task-summary.use-case';
+import { RegisterUserUseCase } from './auth/register-user.use-case';
+import { UserLoginUseCase } from './auth/user-login.use-case';
 
 //repositories
 
@@ -49,6 +53,17 @@ const repositories = [
 ];
 
 //use cases
+
+const authUseCases = [
+  {
+    provide: ISRegisterUserUseCase,
+    useClass: RegisterUserUseCase,
+  },
+  {
+    provide: ISUserLoginUseCase,
+    useClass: UserLoginUseCase,
+  },
+];
 
 const userUseCases = [
   {
@@ -95,7 +110,19 @@ const services = [];
     RealtimeModule,
     TypeOrmModule.forFeature([UserEntity, RoleEntity, TaskEntity]),
   ],
-  providers: [...repositories, ...services, ...userUseCases, ...taskUseCases],
-  exports: [...repositories, ...services, ...userUseCases, ...taskUseCases],
+  providers: [
+    ...repositories,
+    ...services,
+    ...authUseCases,
+    ...userUseCases,
+    ...taskUseCases,
+  ],
+  exports: [
+    ...repositories,
+    ...services,
+    ...authUseCases,
+    ...userUseCases,
+    ...taskUseCases,
+  ],
 })
 export class UseCaseModule {}
