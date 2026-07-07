@@ -23,3 +23,6 @@ PLAN.md
 
 # typescript incremental cache
 *.tsbuildinfo
+
+# production secrets
+.env

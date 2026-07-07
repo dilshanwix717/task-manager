@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { io } from "socket.io-client";
-import { API_BASE_URL } from "@/api/axios";
+import { SOCKET_URL } from "@/api/axios";
 import { useAuthStore } from "@/store/useAuthStore";
 import type { Task } from "@/types/task";
 
@@ -13,7 +13,7 @@ export const useTaskEvents = () => {
   useEffect(() => {
     if (!token) return;
 
-    const socket = io(API_BASE_URL, {
+    const socket = io(SOCKET_URL, {
       auth: { token },
       transports: ["websocket"],
     });

@@ -1,0 +1,55 @@
+# Production override, layered on top of docker-compose.yml:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+#
+# Adds an nginx reverse proxy in front of the stack (single port 80), and pulls
+# every secret / public value from a .env file instead of the dev defaults.
+# Postgres and backend stop publishing their ports to the host — only nginx is
+# exposed, so the database and api are reachable only inside the docker network.
+
+services:
+  postgres:
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports: !reset [] # do not expose the db to the public internet
+
+  backend:
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      JWT_SECRET: ${JWT_SECRET}
+      ACCESS_TOKEN_EXPIRATION: ${ACCESS_TOKEN_EXPIRATION}
+      ADMIN_USER_NAME: ${ADMIN_USER_NAME}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      # browser origin allowed for CORS + socket.io — the public site url
+      FRONTEND_URL: ${PUBLIC_URL}
+    ports: !reset [] # reachable only through nginx
+
+  frontend:
+    build:
+      args:
+        # same-origin api behind nginx: the browser calls /api and the socket
+        # connects to the page origin, so no hardcoded host is baked in
+        NEXT_PUBLIC_API_BASE_URL: /api
+        NEXT_PUBLIC_SOCKET_URL: ""
+    ports: !reset [] # reachable only through nginx
+
+  nginx:
+    image: nginx:1.27-alpine
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - app-network
+    restart: unless-stopped
