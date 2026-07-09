@@ -30,6 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import DateTimePicker from "./DateTimePicker";
 import type { Task } from "@/types/task";
 import type { CreateTaskPayload } from "@/api/tasks";
 
@@ -41,17 +42,11 @@ const taskSchema = z.object({
     .max(255, "Title must be at most 255 characters"),
   description: z.string().optional(),
   status: z.enum(["TODO", "IN_PROGRESS", "DONE"]),
+  // the picker stores an ISO datetime string
   dueDate: z.string().min(1, "Due date is required"),
 });
 
 export type TaskFormValues = z.infer<typeof taskSchema>;
-
-//datetime-local inputs want "YYYY-MM-DDTHH:mm" in local time
-const toInputValue = (iso: string) => {
-  const date = new Date(iso);
-  const offset = date.getTimezoneOffset();
-  return new Date(date.getTime() - offset * 60000).toISOString().slice(0, 16);
-};
 
 interface TaskFormDialogProps {
   open: boolean;
@@ -87,7 +82,7 @@ const TaskFormDialog = ({
         title: task?.title ?? "",
         description: task?.description ?? "",
         status: task?.status ?? "TODO",
-        dueDate: task ? toInputValue(task.dueDate) : "",
+        dueDate: task?.dueDate ?? "",
       });
     }
   }, [open, task, form]);
@@ -154,52 +149,50 @@ const TaskFormDialog = ({
               )}
             />
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Status</FormLabel>
-                    <Select
-                      value={field.value}
-                      onValueChange={field.onChange}
-                      disabled={isSubmitting}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="TODO">To do</SelectItem>
-                        <SelectItem value="IN_PROGRESS">In progress</SelectItem>
-                        <SelectItem value="DONE">Done</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="dueDate"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Due date</FormLabel>
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Status</FormLabel>
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    disabled={isSubmitting}
+                  >
                     <FormControl>
-                      <Input
-                        type="datetime-local"
-                        disabled={isSubmitting}
-                        {...field}
-                      />
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+                    <SelectContent>
+                      <SelectItem value="TODO">To do</SelectItem>
+                      <SelectItem value="IN_PROGRESS">In progress</SelectItem>
+                      <SelectItem value="DONE">Done</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="dueDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Due date</FormLabel>
+                  <FormControl>
+                    <DateTimePicker
+                      value={field.value}
+                      onChange={field.onChange}
+                      disabled={isSubmitting}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <DialogFooter className="gap-2">
               <Button

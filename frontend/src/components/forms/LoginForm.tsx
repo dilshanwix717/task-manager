@@ -15,13 +15,7 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import AuthLayout from "./AuthLayout";
 
 // Schema
 const loginSchema = z.object({
@@ -52,92 +46,104 @@ const LoginForm: React.FC<LoginFormProps> = ({
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <Card className="w-full">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">
-          Task Tracker
-        </CardTitle>
-        <CardDescription className="text-center">
-          Sign in to manage your tasks
-        </CardDescription>
-      </CardHeader>
+    <AuthLayout>
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold text-foreground">Welcome back</h2>
+        <p className="mt-1.5 text-sm text-muted-foreground">
+          Sign in to pick up where you left off.
+        </p>
+      </div>
 
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
+      <Form {...form}>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    type="email"
+                    placeholder="you@example.com"
+                    disabled={isSubmitting}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <div className="relative">
                     <Input
-                      type="email"
-                      placeholder="you@example.com"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
                       disabled={isSubmitting}
+                      className="pr-11"
                       {...field}
                     />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Input
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Enter your password"
-                        disabled={isSubmitting}
-                        {...field}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword((prev) => !prev)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                        tabIndex={-1}
-                      >
-                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                      </button>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {serverError && (
-              <div className="text-sm text-red-500 bg-red-50 p-2 rounded">
-                {serverError}
-              </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                      className="absolute top-1/2 right-3 -translate-y-1/2 rounded-md p-0.5 text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none"
+                      tabIndex={-1}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4.5 w-4.5" />
+                      ) : (
+                        <Eye className="h-4.5 w-4.5" />
+                      )}
+                    </button>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
+          />
 
-            <div className="py-2 text-sm text-blue-500 bg-blue-50 p-2 rounded">
-              <strong>Demo Admin:</strong>
-              <div>admin@tasktracker.dev / admin123</div>
+          {serverError && (
+            <div className="rounded-lg border border-destructive/30 bg-status-overdue-bg px-3 py-2 text-sm text-destructive">
+              {serverError}
             </div>
+          )}
 
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? "Signing in..." : "Sign in"}
-            </Button>
+          <Button
+            type="submit"
+            size="lg"
+            className="w-full"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Signing in..." : "Sign in"}
+          </Button>
+        </form>
+      </Form>
 
-            <p className="text-center text-sm text-muted-foreground">
-              No account yet?{" "}
-              <Link href="/register" className="text-primary underline">
-                Register
-              </Link>
-            </p>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+      {/* demo credentials — shown intentionally so reviewers can sign in */}
+      <div className="mt-6 rounded-lg border border-border bg-primary-tint px-4 py-3 text-sm text-primary-hover">
+        <p className="font-semibold">Demo admin account</p>
+        <p className="mt-1 font-mono text-[13px]">admin@tasktracker.dev</p>
+        <p className="font-mono text-[13px]">admin123</p>
+      </div>
+
+      <p className="mt-8 text-center text-sm text-muted-foreground">
+        No account yet?{" "}
+        <Link
+          href="/register"
+          className="font-semibold text-primary hover:text-primary-hover"
+        >
+          Create one
+        </Link>
+      </p>
+    </AuthLayout>
   );
 };
 
