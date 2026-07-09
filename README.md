@@ -4,7 +4,28 @@ A full-stack task tracking application with role-based access control and real-t
 
 - **Backend** — NestJS (layered architecture), PostgreSQL + TypeORM, JWT auth, Socket.IO
 - **Frontend** — Next.js (App Router), TanStack Query, Zustand, Tailwind CSS + shadcn/ui
-- **Infra** — Docker Compose, GitHub Actions CI
+- **Infra** — Docker Compose, Nginx, GitHub Actions CI/CD, deployed on AWS EC2
+
+## Live demo
+
+The app is deployed and running here: **http://13.229.107.242**
+
+You can log in with the seeded admin account, or register your own user from the
+sign-up page:
+
+```
+admin@tasktracker.dev / admin123
+```
+
+> Note: this is a small demo server I keep running for the review. I plan to shut it
+> down about a week after submitting to avoid running costs, so if the link is down
+> by the time you read this, the whole app still runs locally with the one command
+> below.
+
+## Status
+
+All functional requirements and all of the optional bonus items (containerization,
+deployment, and continuous deployment) are complete. Nothing is left unimplemented.
 
 ## Features
 
@@ -45,7 +66,7 @@ Register any new account through the UI to get a regular `USER`.
 
 ### Prerequisites
 
-- Node.js 22+
+- Node.js 24+
 - PostgreSQL 16 (or run just the database with `docker compose up -d postgres`)
 
 ### Backend
@@ -103,6 +124,44 @@ cd backend
 npm test          # unit tests (use cases, guards) — no database needed
 npm run test:e2e  # e2e tests — needs PostgreSQL running; creates its own task_tracker_test db
 ```
+
+## CI/CD pipeline
+
+Every push and pull request runs the pipeline in [`.github/workflows/ci.yml`](.github/workflows/ci.yml):
+
+- **CI** — two jobs run in parallel. The backend job installs dependencies, lints,
+  builds, and runs the unit + e2e tests (against a throwaway PostgreSQL). The frontend
+  job installs, lints, and builds. If anything fails, nothing gets deployed.
+- **CD** — when both jobs pass on the `main` branch, a deploy job connects to the AWS
+  server over SSH, pulls the latest code, and rebuilds the containers. So pushing to
+  `main` automatically updates the live site with no manual steps.
+
+## Deployment
+
+The app runs on a single AWS EC2 server using the same Docker setup as local, plus an
+Nginx reverse proxy in front of everything:
+
+- **[`docker-compose.prod.yml`](docker-compose.prod.yml)** — a production override on top
+  of the base compose file. It adds Nginx, reads all secrets from a `.env` file instead of
+  hardcoded values, and stops exposing the database and API ports to the internet — only
+  Nginx (port 80) is reachable from outside. The database and backend are only reachable
+  from inside the Docker network.
+- **[`nginx/nginx.conf`](nginx/nginx.conf)** — routes everything through one port: `/` goes
+  to the frontend, `/api` goes to the backend, and `/socket.io` carries the real-time
+  WebSocket traffic. This means the browser talks to a single address with no CORS setup
+  and no port numbers in the URL.
+- **[`.env.prod.example`](.env.prod.example)** — a template of the environment variables the
+  production stack needs. On the server you copy it to `.env` and fill in real secrets; the
+  real `.env` is gitignored and never committed.
+
+To run the production stack locally (or on any server):
+
+```bash
+cp .env.prod.example .env   # then fill in real values
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+```
+
+The site is then served on port 80.
 
 ## API documentation
 
@@ -213,19 +272,24 @@ without a refresh.
 ## Future improvements
 
 - TypeORM migrations instead of `synchronize: true`
-- Refresh tokens + httpOnly cookies; logout-side token invalidation
-- Optimistic UI updates (the current UI waits for the server, realtime covers other clients)
-- Frontend component/e2e tests (Testing Library / Playwright)
+- Refresh tokens + httpOnly cookies, and proper logout that invalidates the token
+- Optimistic UI updates (the current UI waits for the server; real-time covers other clients)
+- Frontend tests (Testing Library / Playwright)
 - Task search, sorting, labels and comments; soft delete with an audit trail
-- Continuous deployment (build + push images from CI) and observability (structured logs, metrics, tracing)
+- A cleaner deploy method than SSH — building the images in CI and having the server pull
+  them, so nothing is built on the production box and the SSH port can stay closed
+- HTTPS with a real domain, and basic monitoring/logging in production
 
 ## Project structure
 
 ```
 .
-├── backend/            # NestJS API
-├── frontend/           # Next.js app
-├── postman/            # Postman collection + environment
-├── .github/workflows/  # CI (lint, build, unit + e2e tests on push/PR)
-└── docker-compose.yml  # postgres + backend + frontend
+├── backend/                  # NestJS API
+├── frontend/                 # Next.js app
+├── nginx/                    # reverse proxy config (used in production)
+├── postman/                  # Postman collection + environment
+├── .github/workflows/        # CI/CD (lint, build, test on push/PR; deploy on main)
+├── docker-compose.yml        # local: postgres + backend + frontend
+├── docker-compose.prod.yml   # production override: adds nginx, real secrets
+└── .env.prod.example         # template for the production environment variables
 ```
