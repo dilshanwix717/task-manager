@@ -1,31 +1,50 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
 import { useTaskSummary } from "@/hooks/useTasks";
 
-const chips = [
-  { key: "total", label: "Total", accent: "text-foreground" },
-  { key: "todo", label: "To do", accent: "text-slate-600" },
-  { key: "inProgress", label: "In progress", accent: "text-blue-600" },
-  { key: "done", label: "Done", accent: "text-green-600" },
-] as const;
+interface TaskSummaryChipsProps {
+  // overdue is computed on the page from the visible tasks (the summary API
+  // doesn't return it), so it's passed in rather than read from the query.
+  overdue: number;
+}
 
-const TaskSummaryChips = () => {
+const TaskSummaryChips = ({ overdue }: TaskSummaryChipsProps) => {
   const { data } = useTaskSummary();
 
   if (!data) return null;
 
+  const chips = [
+    { label: "Total", value: data.total, dot: "bg-foreground" },
+    { label: "To do", value: data.todo, dot: "bg-status-todo-fg" },
+    {
+      label: "In progress",
+      value: data.inProgress,
+      dot: "bg-status-progress-fg",
+    },
+    { label: "Done", value: data.done, dot: "bg-status-done-fg" },
+    { label: "Overdue", value: overdue, dot: "bg-status-overdue-fg" },
+  ];
+
   return (
-    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5">
       {chips.map((chip) => (
-        <Card key={chip.key} className="py-3">
-          <CardContent className="px-4">
-            <div className={`text-2xl font-bold ${chip.accent}`}>
-              {data[chip.key]}
-            </div>
-            <div className="text-xs text-muted-foreground">{chip.label}</div>
-          </CardContent>
-        </Card>
+        <div
+          key={chip.label}
+          className={
+            // mobile: compact row (label left, number right).
+            // sm+: taller card with the big serif number stacked below the label.
+            "flex items-center justify-between gap-2 rounded-xl border border-border bg-card px-3 py-2.5 shadow-sm " +
+            "sm:flex-col sm:items-start sm:justify-start sm:gap-1 sm:rounded-2xl sm:p-4"
+          }
+        >
+          <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+            <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${chip.dot}`} />
+            <span className="truncate">{chip.label}</span>
+          </div>
+          <div className="font-serif text-2xl leading-none text-foreground sm:text-4xl">
+            {chip.value}
+          </div>
+        </div>
       ))}
     </div>
   );

@@ -1,5 +1,7 @@
 "use client";
 
+import { Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -12,6 +14,8 @@ import type { TaskStatus, UserListItem } from "@/types/task";
 const ALL = "ALL";
 
 interface TaskFiltersProps {
+  search: string;
+  onSearchChange: (value: string) => void;
   status: TaskStatus | undefined;
   onStatusChange: (status: TaskStatus | undefined) => void;
   //owner filtering is only rendered for admins
@@ -22,6 +26,8 @@ interface TaskFiltersProps {
 }
 
 const TaskFilters = ({
+  search,
+  onSearchChange,
   status,
   onStatusChange,
   showOwnerFilter,
@@ -30,13 +36,24 @@ const TaskFilters = ({
   onOwnerChange,
 }: TaskFiltersProps) => (
   <div className="flex flex-wrap items-center gap-2">
+    <div className="relative min-w-50 flex-1">
+      <Search className="pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+      <Input
+        value={search}
+        onChange={(e) => onSearchChange(e.target.value)}
+        placeholder="Search tasks..."
+        className="pl-10"
+        aria-label="Search tasks"
+      />
+    </div>
+
     <Select
       value={status ?? ALL}
       onValueChange={(value) =>
         onStatusChange(value === ALL ? undefined : (value as TaskStatus))
       }
     >
-      <SelectTrigger className="w-[160px]">
+      <SelectTrigger className="w-40">
         <SelectValue placeholder="Status" />
       </SelectTrigger>
       <SelectContent>
@@ -54,7 +71,7 @@ const TaskFilters = ({
           onOwnerChange(value === ALL ? undefined : value)
         }
       >
-        <SelectTrigger className="w-[180px]">
+        <SelectTrigger className="w-45">
           <SelectValue placeholder="Owner" />
         </SelectTrigger>
         <SelectContent>
